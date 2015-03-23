@@ -24,11 +24,12 @@ class GaussianFeatureExtractor(object):
         self.img_height = 781                           #Size of the input image
         self.img_width = 1430                           #Size of the input image  
         
-        #Control Variables
+        #Control variables
         self.bridge = CvBridge()                        #Bridge between cv and ros images
         self.jump_i = self.img_height/self.jumper_i     #Window size in i
         self.jump_j = self.img_width/self.jumper_j      #Window size in j
         
+                
     #Returns a ROS image from a opencv image
     def convertImage(self, image):
         return self.bridge.cv2_to_imgmsg(image, "mono8")
@@ -162,7 +163,7 @@ class GaussianFeatureExtractor(object):
             gaussian_image = cv2.normalize(gaussian_image, gaussian_image, 0, 255, cv2.NORM_MINMAX)
             
             cv2.imwrite(gaussian_image_name, gaussian_image)
-
+            
 
         #gaussian_image = cv2.cvtColor(gaussian_image, cv2.COLOR_BGR2GRAY)
         return gaussian_image
@@ -227,7 +228,7 @@ class GaussianFeatureExtractor(object):
                     self.centers_y.append(np.mean( valuey ) )
                     #print valuex
                     #print valuey
-                    print (self.centers_x[-1], self.centers_y[-1]), (self.std_x[-1], self.std_y[-1]) 
+                    #print (self.centers_x[-1], self.centers_y[-1]), (self.std_x[-1], self.std_y[-1]) 
                             
                 last_i += self.jump_i
                 
@@ -262,6 +263,7 @@ class GaussianFeatureExtractor(object):
         centers_used = []
         angles = []
         ellipses = []
+        edges = []
         lines = []
         
         #Control variables
@@ -313,6 +315,8 @@ class GaussianFeatureExtractor(object):
                     if sqrt((ellipses[j][0] - ellipses[i][0])**2 + (ellipses[j][1] - ellipses[i][1])**2) < self.edge_threshold:
                         lines.append(((int(ellipses[i][0]), int(ellipses[i][1])), (int(ellipses[j][0]), int(ellipses[j][1])), (255,0,0)))
                         n_edges += 1
+                        edges.append((i, j))
+                        
         
         #Draw ellipses
         for el in ellipses:
@@ -325,11 +329,20 @@ class GaussianFeatureExtractor(object):
             cv2.line(graph_img, line[0], line[1], (255,0,0))
         
         #Write to file
-        if write:           
-            self.all_graphs.write(str(sum_std_x)+' ')
-            self.all_graphs.write(str(sum_std_y)+' ')
-            self.all_graphs.write(str(n_gaussians)+' ')
-            self.all_graphs.write(str(n_edges)+'\n')
+        if write:
+            aux_ed = 'Edges:'
+            for ed in edges:
+                aux_ed = ' ' + aux_ed + str(ed)
+                
+            aux_el = 'Nodes:'
+            for el in ellipses:
+                if el != -1:
+                    aux_el = ' ' + aux_el + str(el[2])
+            
+            self.all_graphs.write(aux_el)
+            self.all_graphs.write('\n')
+            self.all_graphs.write(aux_ed)
+            self.all_graphs.write('\n')
         
         return graph_img
                   

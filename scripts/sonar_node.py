@@ -28,7 +28,7 @@ class SonarNodes(object):
         self.pub_gauss.publish(self.extract.convertImage(gaussian_image))
         
         #publishing graph image
-        graph_image = self.extract.drawGraph()
+        graph_image = self.extract.drawGraph(False, True)
         self.pub_graph.publish(self.extract.bridge.cv2_to_imgmsg(graph_image, "rgb8"))
         
 
