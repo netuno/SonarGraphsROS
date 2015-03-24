@@ -2,6 +2,7 @@
 import rospy
 from extractor import GaussianFeatureExtractor
 from sensor_msgs.msg import Image
+import time
 
 class SonarNodes(object):
 
@@ -21,15 +22,22 @@ class SonarNodes(object):
         self.pub_graph = rospy.Publisher('graph_image', Image, queue_size=10)
         
     def callback(self, data):
-        img, new_img = self.extract.initImage(data)
+        #Initiliazes time
+        init = time.time()
+        
+        #img, new_img = self.extract.initImage(data)
+        self.extract.initImage(data)
         
         #publishing gaussian image
         gaussian_image = self.extract.createSegments()
+        #gaussian_image = self.extract.createSegmentsFloodFill()
         self.pub_gauss.publish(self.extract.convertImage(gaussian_image))
         
         #publishing graph image
-        graph_image = self.extract.drawGraph(False, True)
+        graph_image = self.extract.drawGraph()
         self.pub_graph.publish(self.extract.bridge.cv2_to_imgmsg(graph_image, "rgb8"))
+        
+        print time.time() - init
         
 
 if __name__ == '__main__':

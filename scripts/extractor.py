@@ -139,7 +139,7 @@ class GaussianFeatureExtractor(object):
                     self.centers_y.append(np.mean( valuey ) )
                     #print valuex
                     #print valuey
-                    print (self.centers_x[-1], self.centers_y[-1]), (self.std_x[-1], self.std_y[-1]) 
+                    #print (self.centers_x[-1], self.centers_y[-1]), (self.std_x[-1], self.std_y[-1]) 
                             
                 last_i += self.jump_i
                 
@@ -169,7 +169,7 @@ class GaussianFeatureExtractor(object):
         return gaussian_image
     
     def createSegmentsFloodFill(self):
-        print "Creating segments!"
+        print "Creating flood fill segments!"
         
         #Initializing values for the segmentation
         last_i = 0
