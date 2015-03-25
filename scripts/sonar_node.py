@@ -10,9 +10,10 @@ class SonarNodes(object):
     def __init__(self):
     
         #Parameters:
+        self.auto_thresholding = True
         self.save_gaussian_image = False
         self.gaussian_image_name = ''
-        self.merge = True
+        self.merge = False
         self.write_graph = False
         self.export_graph_name = ''
     
@@ -34,7 +35,7 @@ class SonarNodes(object):
         init = time.time()
         
         #img, new_img = self.extract.initImage(data)
-        self.extract.initImage(data)
+        self.extract.initImage(data, self.auto_thresholding)
         
         #publishing gaussian image
         gaussian_image = self.extract.createSegments()

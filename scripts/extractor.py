@@ -13,6 +13,7 @@ class GaussianFeatureExtractor(object):
     def __init__(self):
         #Parameter inicialization
         self.all_graphs = open('all_graphs.txt', 'w')   #Stores all the graphs info
+        self.fixed = 157                                #In case of fixed image thresholding
         self.threshold = 1                              #Minimum std deviation for storing a node
         self.edge_threshold = 100                       #Maximum distance for storing a line between nodes
         self.merge_thresh = 10                          #Maximum distance for merging two nodes
@@ -22,7 +23,7 @@ class GaussianFeatureExtractor(object):
         self.jumper_i = 40                              #Number of pixels in i
         self.jumper_j = 40                              #Number of pixels in j
         self.img_height = 781                           #Size of the input image
-        self.img_width = 1430                           #Size of the input image  
+        self.img_width = 1430                           #Size of the input image
         
         #Control variables
         self.bridge = CvBridge()                        #Bridge between cv and ros images
@@ -35,7 +36,7 @@ class GaussianFeatureExtractor(object):
         return self.bridge.cv2_to_imgmsg(image, "mono8")
         
     #Returns the original image and the initiliazed image (with mask and threshold)
-    def initImage(self, data):
+    def initImage(self, data, auto_threshold=True):
         #creating lists
         self.centers_x = []
         self.centers_y = []
@@ -52,20 +53,28 @@ class GaussianFeatureExtractor(object):
         # Convert uint16 to uint8 gray_scale depth
         self.img_norm = np.uint8(self.img_norm)
 
-        hist = cv2.calcHist([self.img_norm],[0],None, [256] , [ 0, 255])
-        
-        # Calculate auto threshold
-        sum = 0
-        threshold = 255
-        for pCount in hist[::-1]:
-            if sum < self.filter_pixel_lin:
-                sum += pCount
-                threshold-= 1
-            else:
-                break
+        if auto_threshold:
+            hist = cv2.calcHist([self.img_norm],[0],None, [256] , [ 0, 255])
+            
+            # Calculate auto threshold
+            sum = 0
+            threshold = 255
+            for pCount in hist[::-1]:
+                if sum < self.filter_pixel_lin:
+                    sum += pCount
+                    threshold-= 1
+                else:
+                    break
+                  
+            #Thresholding the image and grayscaling  
+            self.bin_img = cv2.threshold(self.img_norm, threshold, 255 ,cv2.THRESH_BINARY)[1]
+            
+        else:
+            #Thresholding the image and grayscaling
+            self.bin_img = cv2.threshold(self.img_norm, self.fixed, 255, cv2.THRESH_BINARY)[1]
              
-        #Thresholding the image and grayscaling
-        self.bin_img = cv2.threshold(self.img_norm, threshold, 255 ,cv2.THRESH_BINARY)[1]
+
+
 
         #Setting up the mask
         mask = self.bin_img.copy()
