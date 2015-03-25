@@ -14,7 +14,7 @@ class GaussianFeatureExtractor(object):
         #Parameter inicialization
         self.all_graphs = open('all_graphs.txt', 'w')   #Stores all the graphs info
         self.threshold = 1                              #Minimum std deviation for storing a node
-        self.edge_threshold = 50                        #Minimum distance for storing a line between nodes
+        self.edge_threshold = 100                        #Minimum distance for storing a line between nodes
         self.merge_thresh = 3                           #Similarity of std deviation for merging nodes
         self.filter_min = 0                             #Minimum value for thresholding filter
         self.filter_max = 255                           #Maximum value for thresholding filter
@@ -300,7 +300,7 @@ class GaussianFeatureExtractor(object):
                     for j in range(0, len(ellipses)-1):
                         if ellipses[j] != -1 and ellipses[n] != -1:
                             if sqrt((ellipses[j][0] - ellipses[n][0])**2 + (ellipses[j][1] - ellipses[n][1])**2) < self.edge_threshold:
-                                if abs((ellipses[j][2][0] + ellipses[j][2][1]) - (ellipses[n][2][0] + ellipses[n][2][1])) < self.merge_thresh:
+                                if ((ellipses[j][0] - ellipses[n][0])**2 + (ellipses[j][1] + ellipses[n][1])**2) < self.merge_thresh:
                                     ellipses.append(((ellipses[j][0] + ellipses[n][0])/2, (ellipses[j][1] + ellipses[n][1])/2, ((ellipses[j][2][0] + ellipses[n][2][0]), ellipses[j][2][1] + ellipses[n][2][1]), (ellipses[j][3] + ellipses[n][3])/2))
                                     ellipses[j] = -1
                                     ellipses[n] = -1

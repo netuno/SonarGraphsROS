@@ -6,6 +6,8 @@ import time
 
 class SonarNodes(object):
 
+    
+
     #Initializes the node
     def __init__(self):
         rospy.init_node('sonar_node', anonymous=True)
@@ -34,7 +36,7 @@ class SonarNodes(object):
         self.pub_gauss.publish(self.extract.convertImage(gaussian_image))
         
         #publishing graph image
-        graph_image = self.extract.drawGraph()
+        graph_image = self.extract.drawGraph(True)
         self.pub_graph.publish(self.extract.bridge.cv2_to_imgmsg(graph_image, "rgb8"))
         
         print time.time() - init
