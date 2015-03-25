@@ -14,8 +14,8 @@ class GaussianFeatureExtractor(object):
         #Parameter inicialization
         self.all_graphs = open('all_graphs.txt', 'w')   #Stores all the graphs info
         self.threshold = 1                              #Minimum std deviation for storing a node
-        self.edge_threshold = 100                        #Minimum distance for storing a line between nodes
-        self.merge_thresh = 3                           #Similarity of std deviation for merging nodes
+        self.edge_threshold = 100                       #Maximum distance for storing a line between nodes
+        self.merge_thresh = 10                          #Maximum distance for merging two nodes
         self.filter_min = 0                             #Minimum value for thresholding filter
         self.filter_max = 255                           #Maximum value for thresholding filter
         self.filter_pixel_lin = 2000                    #Number of highest-intensity pixel who we will evaluate in PDI stage
@@ -252,7 +252,6 @@ class GaussianFeatureExtractor(object):
             gaussian_image = cv2.normalize(gaussian_image, gaussian_image, 0, 255, cv2.NORM_MINMAX)
             
             cv2.imwrite(gaussian_image_name, gaussian_image)
-
 
         #gaussian_image = cv2.cvtColor(gaussian_image, cv2.COLOR_BGR2GRAY)
         return gaussian_image

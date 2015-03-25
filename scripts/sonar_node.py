@@ -5,11 +5,17 @@ from sensor_msgs.msg import Image
 import time
 
 class SonarNodes(object):
-
     
-
     #Initializes the node
     def __init__(self):
+    
+        #Parameters:
+        self.save_gaussian_image = False
+        self.gaussian_image_name = ''
+        self.merge = True
+        self.write_graph = False
+        self.export_graph_name = ''
+    
         rospy.init_node('sonar_node', anonymous=True)
         self.extract = GaussianFeatureExtractor()
     
@@ -36,8 +42,9 @@ class SonarNodes(object):
         self.pub_gauss.publish(self.extract.convertImage(gaussian_image))
         
         #publishing graph image
-        graph_image = self.extract.drawGraph(True)
+        graph_image = self.extract.drawGraph(self.merge, self.write_graph, self.export_graph_name)
         self.pub_graph.publish(self.extract.bridge.cv2_to_imgmsg(graph_image, "rgb8"))
+        
         
         print time.time() - init
         
